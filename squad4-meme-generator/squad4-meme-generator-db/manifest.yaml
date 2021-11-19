@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: 4a6a1688414546b2fb0c8e5ef0573ea39d7e8932
+    app.openshift.io/vcs-uri: https://github.com/cloud-native-garage-method-cohort/emea8-squad4-meme-generator-db
+  labels:
+    app.kubernetes.io/instance: squad4-meme-generator-db
+    app.kubernetes.io/name: squad4-meme-generator-db
+  name: squad4-meme-generator-db-svc
+spec:
+  ports:
+  - port: 1433
+    protocol: TCP
+    targetPort: 1433
+  selector:
+    app.kubernetes.io/instance: squad4-meme-generator-db
+    app.kubernetes.io/name: squad4-meme-generator-db
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: 4a6a1688414546b2fb0c8e5ef0573ea39d7e8932
+    app.openshift.io/vcs-uri: https://github.com/cloud-native-garage-method-cohort/emea8-squad4-meme-generator-db
+  labels:
+    app.kubernetes.io/instance: squad4-meme-generator-db
+    app.kubernetes.io/name: squad4-meme-generator-db
+  name: squad4-meme-generator-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: squad4-meme-generator-db
+      app.kubernetes.io/name: squad4-meme-generator-db
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/vcs-ref: 4a6a1688414546b2fb0c8e5ef0573ea39d7e8932
+        app.openshift.io/vcs-uri: https://github.com/cloud-native-garage-method-cohort/emea8-squad4-meme-generator-db
+      labels:
+        app.kubernetes.io/instance: squad4-meme-generator-db
+        app.kubernetes.io/name: squad4-meme-generator-db
+    spec:
+      containers:
+      - env:
+        - name: ACCEPT_EULA
+          valueFrom:
+            configMapKeyRef:
+              key: ACCEPT_EULA
+              name: db-configmap
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: db-secret
+        image: quay.io/levandrejev/squad4-meme-generator-db:4a6a1688414546b2fb0c8e5ef0573ea39d7e8932
+        name: squad4-meme-generator-db
